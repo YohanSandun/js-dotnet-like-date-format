@@ -7,6 +7,12 @@
     <title>.NET Date Formatter</title>
 </head>
 <body>
+    <h1 id="time"></h1>
     <script src="./src/date-format.js"></script>
+    <script>
+        const h1 = document.querySelector("#time");
+        const date = new Date();
+        h1.innerText = date.format("yyyy-MM-dd hh:mm:ss tt");
+    </script>
 </body>
 </html>
