@@ -1,9 +1,27 @@
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const shortWeekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const fill = (number, digits) => {
+    if (number < Math.pow(10, digits-1)) {
+        let filledNumber = number.toString();
+        while (filledNumber.length < digits) {
+            filledNumber = '0' + filledNumber;
+        }
+        return filledNumber;
+    }
+    return number.toString();
+}
 
 const tokens = {
     d : date => date.getDate().toString(),
-    dd : date => date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString(),
+    dd : date => fill(date.getDate(), 2),
+    ddd : date => shortWeekdays[date.getDay()],
+    dddd : date => weekdays[date.getDay()],
+    f: date => parseInt(date.getMilliseconds() / 100).toString(),
+    ff: date => fill(parseInt(date.getMilliseconds() / 10), 2),
+    
 };
 
 const getTokens = (date, format) => {
@@ -19,11 +37,14 @@ const getTokens = (date, format) => {
         return segment;
     }
 
+    let offset = 0;
     while (index < format.length) {
         let oldIndex = index;
         let segment = skip(format[index]);
         if (tokens[segment]) {
-            formatted = formatted.substr(0, oldIndex) + tokens[segment](date) + formatted.substr(index);
+            let replace = tokens[segment](date);
+            formatted = formatted.substr(0, oldIndex + offset) + replace + formatted.substr(index + offset);
+            offset += replace.length - segment.length;
         }
     }
 
@@ -45,4 +66,4 @@ const format = (date, format) => {
     console.log(getTokens(date, format));
 }
 
-format(new Date(), "dd hello d");
+format(new Date(), "dddd-dd ff");
